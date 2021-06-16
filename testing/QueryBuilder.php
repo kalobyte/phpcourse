@@ -5,7 +5,7 @@ use Aura\SqlQuery\QueryFactory;
 use PDO;
 
 
-require "./vendor/autoload.php";
+//require "./vendor/autoload.php";
 
 
 
@@ -26,6 +26,20 @@ public function __construct(array $_config)
     {
         $select  = $this->queryFactory->newSelect();
         $select->cols(["*"])->from($table);
+
+        $sth = $this->pdo->prepare($select->getStatement());
+        $sth->execute($select->getBindValues());
+        return $sth->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function selectById($table, $id)
+    {
+        $select  = $this->queryFactory->newSelect();
+        $select
+            ->cols(["*"])
+            ->from($table)
+            ->where('id = :id')
+            ->bindValue("id", $id);;
 
         $sth = $this->pdo->prepare($select->getStatement());
         $sth->execute($select->getBindValues());
